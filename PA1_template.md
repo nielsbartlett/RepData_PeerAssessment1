@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Introduction
 It is now possible to collect a large amount of data about personal
@@ -50,19 +45,32 @@ dataset.
 
 ## Loading and preprocessing the data
 Read the data directly from the zip file.
-```{r}
+
+```r
 data <- read.table(unz("activity.zip", "activity.csv"), header=T, quote="\"", sep=",")
 ```
 
 This is what the data looks like:
-```{r}
+
+```r
 head(data)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 ## What is mean total number of steps taken per day?
 Calculate the total number of steps taken each day by aggregating by date. Ignore missing values.
 
-```{r}
+
+```r
 dailysum <- aggregate(x = data["steps"],
                      FUN = sum,
                      by = list(Group.date = data$date), na.rm=TRUE)
@@ -70,13 +78,25 @@ dailysum <- aggregate(x = data["steps"],
 
 
 This is what the aggregated data looks like:
-```{r}
+
+```r
 head(dailysum)
+```
+
+```
+##   Group.date steps
+## 1 2012-10-01     0
+## 2 2012-10-02   126
+## 3 2012-10-03 11352
+## 4 2012-10-04 12116
+## 5 2012-10-05 13294
+## 6 2012-10-06 15420
 ```
 
 Plot a histogram of the total number of steps taken each day.
 
-```{r}
+
+```r
 hist(x=dailysum$steps, breaks=10, main="Histogram of Daily Steps", xlab="Steps", ylab="Frequency", xlim=c(0, 25000), ylim=c(0, 20))
 meanDaily <- mean(dailysum[["steps"]])
 medianDaily <- median(dailysum[["steps"]])
@@ -84,15 +104,18 @@ abline(v=meanDaily, col="blue")
 abline(v=medianDaily, col="red")
 ```
 
-The mean (blue vertical line) is: `r meanDaily`
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
-The median (red vertical line) is: `r medianDaily`
+The mean (blue vertical line) is: 9354.2295082
+
+The median (red vertical line) is: 10395
 
 
 ## What is the average daily activity pattern?
 Calculate the daily activity by aggregating by interval (time of day). Ignore missing values.
 
-```{r}
+
+```r
 dailyav <- aggregate(x = data["steps"],
                       FUN = mean,
                       by = list(Group.interval = data$interval), na.rm=TRUE)
@@ -102,29 +125,44 @@ maxrow <- dailyav[ dailyav$steps == max(dailyav$steps), ]
 
 
 This is what the aggregated data looks like:
-```{r}
+
+```r
 head(dailyav)
+```
+
+```
+##   Group.interval     steps
+## 1              0 1.7169811
+## 2              5 0.3396226
+## 3             10 0.1320755
+## 4             15 0.1509434
+## 5             20 0.0754717
+## 6             25 2.0943396
 ```
 
 Plot the daily averaged steps by interval (time of day).
 
-```{r}
+
+```r
 plot(dailyav, type="l", xlab="Interval", ylab="Steps", main="Average steps by time of day")
 abline(v=maxrow$Group.interval, col="red")
 abline(h=maxrow$steps, col="red")
-````
+```
 
-The interval with the maximum number of steps is: `r maxrow$Group.interval` with a value of `r maxrow$steps`.
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
+The interval with the maximum number of steps is: 835 with a value of 206.1698113.
 
 ## Imputing missing values
 
 Calculate the number of values missing from the data.
 
-```{r}
+
+```r
 numMissingValues <- length(data$steps[is.na(data$steps)])
 ```
 
-The number of missing values is: `r numMissingValues`.
+The number of missing values is: 2304.
 
 Use the Hmisc package to impute the missing data.
 
@@ -132,23 +170,37 @@ Work on a copy of the original data.
 
 Use the impute function to set the missing values to the median.
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 library(Hmisc)
 ```
 
-```{r}
+
+```r
 newdata <- data
 newdata$steps <- impute(newdata$steps, median)
 ```
 
 This is what the imputed data looks like:
-```{r}
+
+```r
 head(newdata)
+```
+
+```
+##   steps       date interval
+## 1     0 2012-10-01        0
+## 2     0 2012-10-01        5
+## 3     0 2012-10-01       10
+## 4     0 2012-10-01       15
+## 5     0 2012-10-01       20
+## 6     0 2012-10-01       25
 ```
 
 Calculate the total number of steps taken each day by aggregating by date.
 
-```{r}
+
+```r
 newdailysum <- aggregate(x = newdata["steps"],
                      FUN = sum,
                      by = list(Group.date = newdata$date), na.rm=TRUE)
@@ -156,13 +208,25 @@ newdailysum <- aggregate(x = newdata["steps"],
 
 
 This is what the aggregated data looks like:
-```{r}
+
+```r
 head(newdailysum)
+```
+
+```
+##   Group.date steps
+## 1 2012-10-01     0
+## 2 2012-10-02   126
+## 3 2012-10-03 11352
+## 4 2012-10-04 12116
+## 5 2012-10-05 13294
+## 6 2012-10-06 15420
 ```
 
 Plot a histogram of the total number of steps taken each day.
 
-```{r}
+
+```r
 hist(x=newdailysum$steps, breaks=10, main="Histogram of Daily Steps (Imputed data)", xlab="Steps", ylab="Frequency", xlim=c(0, 25000), ylim=c(0, 25))
 newmeanDaily <- mean(newdailysum[["steps"]])
 newmedianDaily <- median(newdailysum[["steps"]])
@@ -170,20 +234,23 @@ abline(v=newmeanDaily, col="blue")
 abline(v=newmedianDaily, col="red")
 ```
 
-The imputed data mean is: `r newmeanDaily`
+![](PA1_template_files/figure-html/unnamed-chunk-15-1.png) 
 
-The imputed data median is: `r newmedianDaily`
+The imputed data mean is: 9354.2295082
 
-The original mean is: `r meanDaily`
+The imputed data median is: 1.0395\times 10^{4}
 
-The original median is: `r medianDaily`
+The original mean is: 9354.2295082
+
+The original median is: 10395
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Create a new function to determine if a date is a weekday or a weekend and then vectorize it.
 
-```{r}
+
+```r
 isweekend <- function(date) {
     if (weekdays(date) == "Saturday" | weekdays(date) == "Sunday")
         return("weekend")
@@ -196,38 +263,77 @@ visweekend <- Vectorize(isweekend, "date")
 
 Now mutate the new data set and add a new factor variable to it
 
-```{r}
+
+```r
 library(plyr)
+```
+
+```
+## 
+## Attaching package: 'plyr'
+## 
+## The following objects are masked from 'package:Hmisc':
+## 
+##     is.discrete, summarize
+```
+
+```r
 newdata <- mutate(newdata, DayType = visweekend(as.Date(date)))
 newdata$DayType <- as.factor(newdata$DayType)
 ```
 
 The modified dataset looks like this:
 
-```{r}
+
+```r
 head(newdata)
+```
+
+```
+##   steps       date interval DayType
+## 1     0 2012-10-01        0 weekday
+## 2     0 2012-10-01        5 weekday
+## 3     0 2012-10-01       10 weekday
+## 4     0 2012-10-01       15 weekday
+## 5     0 2012-10-01       20 weekday
+## 6     0 2012-10-01       25 weekday
 ```
 
 Aggregate the data by interval for weekdays and weekends.
 
-```{r}
+
+```r
 newdailyav <- aggregate(steps ~ interval + DayType, newdata, mean)
 ```
 
 The aggregated data looks like this:
 
-```{r}
+
+```r
 head(newdailyav)
+```
+
+```
+##   interval DayType      steps
+## 1        0 weekday 2.02222222
+## 2        5 weekday 0.40000000
+## 3       10 weekday 0.15555556
+## 4       15 weekday 0.17777778
+## 5       20 weekday 0.08888889
+## 6       25 weekday 1.31111111
 ```
 
 Use lattice to plot the data:
 
-```{r}
+
+```r
 library(lattice)
 xyplot(steps ~ interval | DayType, newdailyav, type = "l", layout = c(1,2),
     main = "Average number of steps taken by interval for weekdays and Weekends",
     xlab = "Interval (time of day)", ylab = "Steps" )
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-21-1.png) 
 
 
 

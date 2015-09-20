@@ -1,0 +1,17 @@
+{
+    "contents" : "## test code\nlibrary(plyr)\n\ndata <- read.table(unz(\"activity.zip\", \"activity.csv\"), header=T, quote=\"\\\"\", sep=\",\")\ncleandata <- data\ny <- sprintf(\"%s %04d\", data$date, data$interval)\ncleandata$date <- strptime(y, format=\"%Y-%m-%d %H%M\")\n\ndailysum <- aggregate(x = data[\"steps\"],\n                     FUN = sum,\n                     by = list(Group.date = data$date), na.rm=TRUE)\n\nhist(x=dailysum$steps, breaks=10, main=\"Histogram of Daily Steps\", xlab=\"Steps\", ylab=\"Frequency\", xlim=c(0, 25000), ylim=c(0, 20))\nabline(v=mean(dailysum[[\"steps\"]]), col=\"blue\")\nabline(v=median(dailysum[[\"steps\"]]), col=\"red\")\n\nmean(dailysum[[\"steps\"]])\nmedian(dailysum[[\"steps\"]])\n\ndailyav <- aggregate(x = data[\"steps\"],\n                      FUN = mean,\n                      by = list(Group.interval = data$interval), na.rm=TRUE)\n\nmaxrow <- dailyav[ dailyav$steps == max(dailyav$steps), ]\nplot(dailyav, type=\"l\", xlab=\"Interval\", ylab=\"Steps\", main=\"Average steps by time of day\")\nabline(v=maxrow$Group.interval, col=\"red\")\nabline(h=maxrow$steps, col=\"red\")\n##maxrow$Group.interval\n##maxrow$steps\n\n##cleandata %>%\n##    group_by(date) %>%\n##    summarise(TotalSteps = sum(steps))\n\nhead(cleandata,50)\nhead(y,50)\nhead(temp,50)\n\n\n\ncleandata$date <- strptime(sprintf(\"%s %04d\", data$date, data$interval), format=\"%Y-%m-%d %H%M\")\n\nisweekend <- function(date) {\n    if (weekdays(date) == \"Saturday\" | weekdays(date) == \"Sunday\")\n        return(\"weekend\")\n    else\n        return(\"weekday\")\n}\n\nvisweekend <- Vectorize(isweekend, \"date\")\n\n\nnewdailyav <- aggregate(steps ~ interval + DayType, test, mean)\nhead(newdailyav)\nxyplot(steps ~ interval | DayType, newdailyav, type = \"l\", layout = c(1,2),\n       main = \"Average number of steps taken by interval for weekdays and Weekends\",\n       xlab = \"Interval (time of day)\", ylab = \"Steps\" )\n\n\n\n\n\n\n",
+    "created" : 1442312714978.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3589552400",
+    "id" : "FC150091",
+    "lastKnownWriteTime" : 1442767160,
+    "path" : "C:/Users/Niels/RepRes Assess1/RepData_PeerAssessment1/test.R",
+    "project_path" : "test.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
